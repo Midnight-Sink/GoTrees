@@ -71,11 +71,11 @@ func TestBTreeValues(t *testing.T) {
 
 func TestBTreeInsert(t *testing.T) {
 	BT := NewBTree(10)
-	keys := make([]int, NRAND)
+	keys := make([]int, nRAND)
 
-	for i := 0; i < NRAND; i++ {
-		// NRAND - 1 to ensure at least one duplicate key
-		key := rand.Intn(NRAND - 1)
+	for i := 0; i < nRAND; i++ {
+		// nRAND - 1 to ensure at least one duplicate key
+		key := rand.Intn(nRAND - 1)
 		keys[i] = key
 		BT.Insert(key, nil)
 		if BT.Size != uint64(i+1) {
@@ -115,11 +115,11 @@ func TestBTreeHeight(t *testing.T) {
 
 func TestBTreeFind(t *testing.T) {
 	BT := NewBTree(10)
-	keys := make([]int, NRAND)
+	keys := make([]int, nRAND)
 
-	for i := 0; i < NRAND; i++ {
-		// NRAND - 1 to ensure at least one duplicate key
-		key := rand.Intn(NRAND - 1)
+	for i := 0; i < nRAND; i++ {
+		// nRAND - 1 to ensure at least one duplicate key
+		key := rand.Intn(nRAND - 1)
 		keys[i] = key
 		BT.Insert(key, nil)
 	}
@@ -128,18 +128,18 @@ func TestBTreeFind(t *testing.T) {
 			t.Fatal("Could not find node " + sc.Itoa(k) + ". ")
 		}
 	}
-	if BT.Find(NRAND+1) != nil {
+	if BT.Find(nRAND+1) != nil {
 		t.Fatal("Found node that was not in the tree. ")
 	}
 }
 
 func TestBTreeContains(t *testing.T) {
 	BT := NewBTree(10)
-	keys := make([]int, NRAND)
+	keys := make([]int, nRAND)
 
-	for i := 0; i < NRAND; i++ {
-		// NRAND - 1 to ensure at least one duplicate key
-		key := rand.Intn(NRAND - 1)
+	for i := 0; i < nRAND; i++ {
+		// nRAND - 1 to ensure at least one duplicate key
+		key := rand.Intn(nRAND - 1)
 		keys[i] = key
 		BT.Insert(key, nil)
 	}
@@ -148,14 +148,14 @@ func TestBTreeContains(t *testing.T) {
 			t.Fatal("Could not find node " + sc.Itoa(k) + ". ")
 		}
 	}
-	if BT.Contains(NRAND + 1) {
+	if BT.Contains(nRAND + 1) {
 		t.Fatal("Found node that was not in the tree. ")
 	}
 }
 
 func TestBTreeDelete(t *testing.T) {
 	BT := NewBTree(10)
-	keys := rand.Perm(NRAND)
+	keys := rand.Perm(nRAND)
 
 	for _, key := range keys {
 		BT.Insert(key, nil)
@@ -168,8 +168,8 @@ func TestBTreeDelete(t *testing.T) {
 		if BT.Find(k) != nil {
 			t.Fatal("Found deleted node after deletion of:" + sc.Itoa(k) + ". ")
 		}
-		if BT.Size != uint64(NRAND-(i+1)) {
-			t.Fatal("BT size incorrect, expected " + sc.Itoa(NRAND-(i+1)) + " but got " + sc.Itoa(int(BT.Size)) + ". ")
+		if BT.Size != uint64(nRAND-(i+1)) {
+			t.Fatal("BT size incorrect, expected " + sc.Itoa(nRAND-(i+1)) + " but got " + sc.Itoa(int(BT.Size)) + ". ")
 		}
 		for _, kInner := range keys[i+1:] {
 			if !BT.Contains(kInner) {
