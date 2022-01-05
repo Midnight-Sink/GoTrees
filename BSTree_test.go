@@ -1,7 +1,6 @@
 package GoTrees
 
 import (
-	"log"
 	"math/rand"
 	"sort"
 	sc "strconv"
@@ -165,7 +164,6 @@ func TestBSTreeDelete(t *testing.T) {
 		BST.Insert(key, nil)
 	}
 	for i, k := range keys {
-		log.Print(BST.String())
 		if !BST.Delete(k) {
 			t.Fatal("BST returned false when tree should have been modified. ")
 		}
