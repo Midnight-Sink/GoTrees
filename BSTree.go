@@ -1,5 +1,9 @@
 package GoTrees
 
+import (
+	"strconv"
+)
+
 // BSTree is a binary search tree using key-value nodes.
 type BSTree struct {
 	Root *Node
@@ -64,16 +68,30 @@ func (bst *BSTree) Delete(key int) bool {
 						parent_ios = ios
 						ios = ios.Left
 					}
-					parent_ios.Left = ios.Right
-				}
-				ios.Left = curr.Left
-				ios.Right = curr.Right
-				if parent == nil {
-					bst.Root = ios
-				} else if side {
-					parent.Right = ios
+					if parent_ios != curr {
+						parent_ios.Left = ios.Right
+					} else {
+						parent_ios.Right = ios.Right
+					}
+
+					ios.Left = curr.Left
+					// circular reference here
+					ios.Right = curr.Right
+					if parent == nil {
+						bst.Root = ios
+					} else if side {
+						parent.Right = ios
+					} else {
+						parent.Left = ios
+					}
 				} else {
-					parent.Left = ios
+					if parent == nil {
+						bst.Root = curr.Left
+					} else if side {
+						parent.Right = curr.Left
+					} else {
+						parent.Left = curr.Left
+					}
 				}
 				return true
 			} else if curr.Right == nil {
@@ -94,11 +112,6 @@ func (bst *BSTree) Delete(key int) bool {
 		}
 	}
 	// BST is empty
-	return false
-}
-
-// DeleteAll will delete all occurances of the key in the BST. It will return whether or not the tree was changed.
-func (bst *BSTree) DeleteAll(key int) bool {
 	return false
 }
 
@@ -209,23 +222,67 @@ func (bst *BSTree) Clear() {
 	bst.Size = 0
 }
 
-func (bst *BSTree) Height() {
-
-}
-
-// String will return the BST represented as a string. Each level will be printed on a new line. Only keys will be printed. "X" represents a nil node.
-func (bst *BSTree) String() {
-
-}
-
-// getLevel returns all nodes on a level of the tree. If an element is nil in the node slice it means there is no node there
-func (bst *BSTree) getLevel(level uint64, n *Node) []*Node {
-	if n == nil {
-		return []*Node{nil}
-	} else if level == 0 {
-		return []*Node{n}
+func (bst *BSTree) Height() uint64 {
+	if bst.Root == nil {
+		return 0
 	}
-	l := bst.getLevel(level-1, n.Left)
-	r := bst.getLevel(level-1, n.Right)
-	return append(append(l, n), r...)
+	height := uint64(0)
+	nodeQ := []*Node{}
+	qSize := 0
+
+	nodeQ = append(nodeQ, bst.Root)
+	qSize++
+
+	for {
+		if qSize == 0 {
+			return height
+		}
+		height++
+		nodeCount := qSize
+		for nodeCount > 0 {
+			if nodeQ[0].Left != nil {
+				nodeQ = append(nodeQ, nodeQ[0].Left)
+				qSize++
+			}
+			if nodeQ[0].Right != nil {
+				nodeQ = append(nodeQ, nodeQ[0].Right)
+				qSize++
+			}
+			nodeQ = nodeQ[1:]
+			qSize--
+			nodeCount--
+		}
+	}
+}
+
+// String will return the BST represented as a string. Each level will be printed on a new line. Only keys will be printed. "X" represents a nil node. After the X is printed, all subsequent levels will not include this nodes children.
+func (bst *BSTree) String() string {
+	nodeQ := []*Node{}
+	qSize := 0
+	str := ""
+
+	nodeQ = append(nodeQ, bst.Root)
+	qSize++
+
+	for {
+		if qSize == 0 {
+			return str
+		}
+		nodeCount := qSize
+		for nodeCount > 0 {
+			if nodeQ[0] == nil {
+				str = str + "X "
+			} else {
+				nodeQ = append(nodeQ, nodeQ[0].Left)
+				qSize++
+				nodeQ = append(nodeQ, nodeQ[0].Right)
+				qSize++
+				str = str + strconv.Itoa(nodeQ[0].Key) + " "
+			}
+			nodeQ = nodeQ[1:]
+			qSize--
+			nodeCount--
+		}
+		str = str + "\n"
+	}
 }

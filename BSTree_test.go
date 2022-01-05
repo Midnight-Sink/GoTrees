@@ -1,6 +1,7 @@
 package GoTrees
 
 import (
+	"log"
 	"math/rand"
 	"sort"
 	sc "strconv"
@@ -94,6 +95,28 @@ func TestBSTreeInsert(t *testing.T) {
 	}
 }
 
+func TestBSTreeHeight(t *testing.T) {
+	BST := NewBSTree()
+
+	h := BST.Height()
+	if h != 0 {
+		t.Fatal("Height was expected to be 0 but was " + sc.Itoa(int(h)))
+	}
+
+	BST.Insert(10, 10)
+	BST.Insert(11, 11)
+	BST.Insert(9, 9)
+	BST.Insert(8, 8)
+	BST.Insert(14, 14)
+	BST.Insert(12, 12)
+	BST.Insert(13, 13)
+
+	h = BST.Height()
+	if h != 5 {
+		t.Fatal("Height was expected to be 5 but was " + sc.Itoa(int(h)))
+	}
+}
+
 func TestBSTreeFind(t *testing.T) {
 	BST := NewBSTree()
 	keys := make([]int, NRAND)
@@ -141,7 +164,8 @@ func TestBSTreeDelete(t *testing.T) {
 	for _, key := range keys {
 		BST.Insert(key, nil)
 	}
-	for _, k := range keys {
+	for i, k := range keys {
+		log.Print(BST.String())
 		if !BST.Delete(k) {
 			t.Fatal("BST returned false when tree should have been modified. ")
 		}
@@ -149,18 +173,31 @@ func TestBSTreeDelete(t *testing.T) {
 		if BST.Find(k) != nil {
 			t.Fatal("Found deleted node after deletion of:" + sc.Itoa(k) + ". ")
 		}
-		/*
-			if BST.Size != uint64(i+1) {
-				t.Fatal("BST size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BST.Size)) + ". ")
+		if BST.Size != uint64(NRAND-(i+1)) {
+			t.Fatal("BST size incorrect, expected " + sc.Itoa(NRAND-(i+1)) + " but got " + sc.Itoa(int(BST.Size)) + ". ")
+		}
+		for _, kInner := range keys[i+1:] {
+			if !BST.Contains(kInner) {
+				t.Fatal("Tree is missing key that wasn't deletd yet. ")
 			}
-		*/
+		}
 	}
 }
 
-func TestBSTreeDeleteAll(t *testing.T) {
-
-}
-
 func TestBSTreeString(t *testing.T) {
+	BST := NewBSTree()
 
+	BST.Insert(10, 10)
+	BST.Insert(11, 11)
+	BST.Insert(9, 9)
+	BST.Insert(8, 8)
+	BST.Insert(14, 14)
+	BST.Insert(12, 12)
+	BST.Insert(13, 13)
+
+	expected := "10 \n9 11 \n8 X X 14 \nX X 12 X \nX 13 \nX X \n"
+	actual := BST.String()
+	if actual != expected {
+		t.Fatal("Expected output: \n" + expected + "\n but got \n" + BST.String())
+	}
 }
