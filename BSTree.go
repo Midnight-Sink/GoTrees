@@ -6,21 +6,21 @@ import (
 
 // BSTree is a binary search tree using key-value nodes.
 type BSTree struct {
-	Root *Node
-	Size uint64
+	root *node
+	size uint64
 }
 
 // NewBSTree returns an empty binary search tree. The values will be initialized the same way when doing BSTree{}
 func NewBSTree() BSTree {
-	return BSTree{Root: nil, Size: 0}
+	return BSTree{root: nil, size: 0}
 }
 
 // Insert will insert node into the BST. If the node has a duplicate key, it will be placed on the RIGHT subtree.
 func (bst *BSTree) Insert(key int, value interface{}) {
 	node := NewNode(key, value)
-	bst.Size++
+	bst.size++
 	// n is the iterating node variable
-	n := bst.Root
+	n := bst.root
 	for n != nil {
 		// check which side the node should progress to
 		if n.Key <= node.Key {
@@ -42,7 +42,7 @@ func (bst *BSTree) Insert(key int, value interface{}) {
 		}
 	}
 	// if the tree is empty
-	bst.Root = &node
+	bst.root = &node
 }
 
 // Delete will delete the closest occurance of the key to the root in the BST. It will return whether or not the tree was changed.
@@ -50,19 +50,19 @@ func (bst *BSTree) Delete(key int) bool {
 	// the side of the child in relation to the parent (false is left)
 	side := false
 	// the parent node for the current node
-	var parent *Node = nil
+	var parent *node = nil
 	// the current node
-	curr := bst.Root
+	curr := bst.root
 	for curr != nil {
 		// check which side the node should progress to
 		if curr.Key <= key {
 			// check if the node has the desired key
 			if curr.Key == key {
-				bst.Size--
+				bst.size--
 				// find in order successor
-				var ios *Node = curr.Right
+				var ios *node = curr.Right
 				if ios != nil {
-					var parent_ios *Node = curr
+					var parent_ios *node = curr
 					// in order successor is leftmost node in subtree
 					for ios.Left != nil {
 						parent_ios = ios
@@ -78,7 +78,7 @@ func (bst *BSTree) Delete(key int) bool {
 					// circular reference here
 					ios.Right = curr.Right
 					if parent == nil {
-						bst.Root = ios
+						bst.root = ios
 					} else if side {
 						parent.Right = ios
 					} else {
@@ -86,7 +86,7 @@ func (bst *BSTree) Delete(key int) bool {
 					}
 				} else {
 					if parent == nil {
-						bst.Root = curr.Left
+						bst.root = curr.Left
 					} else if side {
 						parent.Right = curr.Left
 					} else {
@@ -116,9 +116,9 @@ func (bst *BSTree) Delete(key int) bool {
 }
 
 // Find will find key in the BST and return the node. Find will return the closest occurance of key to the root.
-func (bst *BSTree) Find(key int) *Node {
+func (bst *BSTree) Find(key int) *node {
 	// n is the iterating node variable
-	n := bst.Root
+	n := bst.root
 	for n != nil {
 		// check which side the node should progress to
 		if n.Key <= key {
@@ -148,20 +148,20 @@ func (bst *BSTree) Contains(key int) bool {
 }
 
 func (bst *BSTree) Keys() []int {
-	keys := make([]int, bst.Size)
+	keys := make([]int, bst.size)
 	i := 0
-	nodeStack := []*Node{}
-	stackSize := 0
-	n := bst.Root
-	for n != nil || stackSize != 0 {
+	nodeStack := []*node{}
+	stacksize := 0
+	n := bst.root
+	for n != nil || stacksize != 0 {
 		if n != nil {
 			nodeStack = append(nodeStack, n)
-			stackSize++
+			stacksize++
 			n = n.Left
 		} else {
-			n = nodeStack[stackSize-1]
-			nodeStack = nodeStack[:stackSize-1]
-			stackSize--
+			n = nodeStack[stacksize-1]
+			nodeStack = nodeStack[:stacksize-1]
+			stacksize--
 			keys[i] = n.Key
 			i++
 			n = n.Right
@@ -171,20 +171,20 @@ func (bst *BSTree) Keys() []int {
 }
 
 func (bst *BSTree) Values() []interface{} {
-	vals := make([]interface{}, bst.Size)
+	vals := make([]interface{}, bst.size)
 	i := 0
-	nodeStack := []*Node{}
-	stackSize := 0
-	n := bst.Root
-	for n != nil || stackSize != 0 {
+	nodeStack := []*node{}
+	stacksize := 0
+	n := bst.root
+	for n != nil || stacksize != 0 {
 		if n != nil {
 			nodeStack = append(nodeStack, n)
-			stackSize++
+			stacksize++
 			n = n.Left
 		} else {
-			n = nodeStack[stackSize-1]
-			nodeStack = nodeStack[:stackSize-1]
-			stackSize--
+			n = nodeStack[stacksize-1]
+			nodeStack = nodeStack[:stacksize-1]
+			stacksize--
 			vals[i] = n.Val
 			i++
 			n = n.Right
@@ -193,21 +193,21 @@ func (bst *BSTree) Values() []interface{} {
 	return vals
 }
 
-func (bst *BSTree) Slice() []*Node {
-	nodes := make([]*Node, bst.Size)
+func (bst *BSTree) Slice() []*node {
+	nodes := make([]*node, bst.size)
 	i := 0
-	nodeStack := []*Node{}
-	stackSize := 0
-	n := bst.Root
-	for n != nil || stackSize != 0 {
+	nodeStack := []*node{}
+	stacksize := 0
+	n := bst.root
+	for n != nil || stacksize != 0 {
 		if n != nil {
 			nodeStack = append(nodeStack, n)
-			stackSize++
+			stacksize++
 			n = n.Left
 		} else {
-			n = nodeStack[stackSize-1]
-			nodeStack = nodeStack[:stackSize-1]
-			stackSize--
+			n = nodeStack[stacksize-1]
+			nodeStack = nodeStack[:stacksize-1]
+			stacksize--
 			nodes[i] = n
 			i++
 			n = n.Right
@@ -218,38 +218,38 @@ func (bst *BSTree) Slice() []*Node {
 
 // Clear clears the BST of all nodes.
 func (bst *BSTree) Clear() {
-	bst.Root = nil
-	bst.Size = 0
+	bst.root = nil
+	bst.size = 0
 }
 
 func (bst *BSTree) Height() uint64 {
-	if bst.Root == nil {
+	if bst.root == nil {
 		return 0
 	}
 	height := uint64(0)
-	nodeQ := []*Node{}
-	qSize := 0
+	nodeQ := []*node{}
+	qsize := 0
 
-	nodeQ = append(nodeQ, bst.Root)
-	qSize++
+	nodeQ = append(nodeQ, bst.root)
+	qsize++
 
 	for {
-		if qSize == 0 {
+		if qsize == 0 {
 			return height
 		}
 		height++
-		nodeCount := qSize
+		nodeCount := qsize
 		for nodeCount > 0 {
 			if nodeQ[0].Left != nil {
 				nodeQ = append(nodeQ, nodeQ[0].Left)
-				qSize++
+				qsize++
 			}
 			if nodeQ[0].Right != nil {
 				nodeQ = append(nodeQ, nodeQ[0].Right)
-				qSize++
+				qsize++
 			}
 			nodeQ = nodeQ[1:]
-			qSize--
+			qsize--
 			nodeCount--
 		}
 	}
@@ -257,32 +257,36 @@ func (bst *BSTree) Height() uint64 {
 
 // String will return the BST represented as a string. Each level will be printed on a new line. Only keys will be printed. "X" represents a nil node. After the X is printed, all subsequent levels will not include this nodes children.
 func (bst *BSTree) String() string {
-	nodeQ := []*Node{}
-	qSize := 0
+	nodeQ := []*node{}
+	qsize := 0
 	str := ""
 
-	nodeQ = append(nodeQ, bst.Root)
-	qSize++
+	nodeQ = append(nodeQ, bst.root)
+	qsize++
 
 	for {
-		if qSize == 0 {
+		if qsize == 0 {
 			return str
 		}
-		nodeCount := qSize
+		nodeCount := qsize
 		for nodeCount > 0 {
 			if nodeQ[0] == nil {
 				str = str + "X "
 			} else {
 				nodeQ = append(nodeQ, nodeQ[0].Left)
-				qSize++
+				qsize++
 				nodeQ = append(nodeQ, nodeQ[0].Right)
-				qSize++
+				qsize++
 				str = str + strconv.Itoa(nodeQ[0].Key) + " "
 			}
 			nodeQ = nodeQ[1:]
-			qSize--
+			qsize--
 			nodeCount--
 		}
 		str = str + "\n"
 	}
+}
+
+func (bst *BSTree) Size() uint64 {
+	return bst.size
 }

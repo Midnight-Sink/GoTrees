@@ -78,8 +78,8 @@ func TestBTreeInsert(t *testing.T) {
 		key := rand.Intn(nRAND - 1)
 		keys[i] = key
 		BT.Insert(key, nil)
-		if BT.Size != uint64(i+1) {
-			t.Fatal("BT size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BT.Size)) + ". ")
+		if BT.size != uint64(i+1) {
+			t.Fatal("BT size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BT.size)) + ". ")
 		}
 	}
 	sort.Ints(keys)
@@ -168,8 +168,8 @@ func TestBTreeDelete(t *testing.T) {
 		if BT.Find(k) != nil {
 			t.Fatal("Found deleted node after deletion of:" + sc.Itoa(k) + ". ")
 		}
-		if BT.Size != uint64(nRAND-(i+1)) {
-			t.Fatal("BT size incorrect, expected " + sc.Itoa(nRAND-(i+1)) + " but got " + sc.Itoa(int(BT.Size)) + ". ")
+		if BT.size != uint64(nRAND-(i+1)) {
+			t.Fatal("BT size incorrect, expected " + sc.Itoa(nRAND-(i+1)) + " but got " + sc.Itoa(int(BT.size)) + ". ")
 		}
 		for _, kInner := range keys[i+1:] {
 			if !BT.Contains(kInner) {

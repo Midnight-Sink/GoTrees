@@ -78,8 +78,8 @@ func TestBSTreeInsert(t *testing.T) {
 		key := rand.Intn(nRAND - 1)
 		keys[i] = key
 		BST.Insert(key, nil)
-		if BST.Size != uint64(i+1) {
-			t.Fatal("BST size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BST.Size)) + ". ")
+		if BST.size != uint64(i+1) {
+			t.Fatal("BST size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BST.size)) + ". ")
 		}
 	}
 	sort.Ints(keys)
@@ -168,8 +168,8 @@ func TestBSTreeDelete(t *testing.T) {
 		if BST.Find(k) != nil {
 			t.Fatal("Found deleted node after deletion of:" + sc.Itoa(k) + ". ")
 		}
-		if BST.Size != uint64(nRAND-(i+1)) {
-			t.Fatal("BST size incorrect, expected " + sc.Itoa(nRAND-(i+1)) + " but got " + sc.Itoa(int(BST.Size)) + ". ")
+		if BST.size != uint64(nRAND-(i+1)) {
+			t.Fatal("BST size incorrect, expected " + sc.Itoa(nRAND-(i+1)) + " but got " + sc.Itoa(int(BST.size)) + ". ")
 		}
 		for _, kInner := range keys[i+1:] {
 			if !BST.Contains(kInner) {

@@ -2,14 +2,14 @@ package GoTrees
 
 // BTree is a b-tree using key-value nodes.
 type BTree struct {
-	Root []*Node
-	Size uint64
+	root []*node
+	size uint64
 	t    uint
 }
 
 // NewBTree returns an empty b-tree. t is the degree of the b-tree.
 func NewBTree(t uint) BTree {
-	return BTree{Root: make([]*Node, 0), Size: 0, t: t}
+	return BTree{root: make([]*node, 0), size: 0, t: t}
 }
 
 // Insert will insert node into the BT. If the node has a duplicate key, it will be placed on the RIGHT subtree.
@@ -23,7 +23,7 @@ func (bt *BTree) Delete(key int) bool {
 }
 
 // Find will find key in the B-Tree and return the node. Find will return the closest occurance of key to the root.
-func (bt *BTree) Find(key int) *Node {
+func (bt *BTree) Find(key int) *node {
 	return nil
 }
 
@@ -40,14 +40,14 @@ func (bt *BTree) Values() []interface{} {
 	return nil
 }
 
-func (bt *BTree) Slice() []*Node {
+func (bt *BTree) Slice() []*node {
 	return nil
 }
 
 // Clear clears the B-Tree of all nodes.
 func (bt *BTree) Clear() {
-	bt.Root = nil
-	bt.Size = 0
+	bt.root = nil
+	bt.size = 0
 }
 
 func (bt *BTree) Height() uint64 {
