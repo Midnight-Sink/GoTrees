@@ -193,7 +193,7 @@ func (bst *BSTree) Values() []interface{} {
 	return vals
 }
 
-func (bst *BSTree) Slice() []*node {
+func (bst *BSTree) slice() []*node {
 	nodes := make([]*node, bst.size)
 	i := 0
 	nodeStack := []*node{}

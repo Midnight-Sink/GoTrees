@@ -18,7 +18,7 @@ func TestBSTreeSlice(t *testing.T) {
 	BST.Insert(12, nil)
 	BST.Insert(13, nil)
 
-	nodes := BST.Slice()
+	nodes := BST.slice()
 	expected := []int{8, 9, 10, 11, 12, 13, 14}
 	for i, n := range nodes {
 		if n == nil {

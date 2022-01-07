@@ -40,7 +40,7 @@ func (bt *BTree) Values() []interface{} {
 	return nil
 }
 
-func (bt *BTree) Slice() []*node {
+func (bt *BTree) slice() []*node {
 	return nil
 }
 
