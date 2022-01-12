@@ -23,8 +23,8 @@ func TestBTreeSlice(t *testing.T) {
 	for i, n := range nodes {
 		if n == nil {
 			t.Fatal("BT slice was incorrect, expected " + sc.Itoa(expected[i]) + " at index " + sc.Itoa(i) + " but got nil node. ")
-		} else if n.Key != expected[i] {
-			t.Fatal("BT slice was incorrect, expected " + sc.Itoa(expected[i]) + " at index " + sc.Itoa(i) + " but got " + sc.Itoa(n.Key) + ". ")
+		} else if n.key != expected[i] {
+			t.Fatal("BT slice was incorrect, expected " + sc.Itoa(expected[i]) + " at index " + sc.Itoa(i) + " but got " + sc.Itoa(n.key) + ". ")
 		}
 	}
 }

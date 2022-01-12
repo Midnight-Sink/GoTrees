@@ -7,7 +7,7 @@ type node struct {
 	Left, Right *node
 }
 
-// NewNode creates a new node with the key and value provided.
-func NewNode(key int, val interface{}) node {
-	return node{Key: key, Val: val}
+// newNode creates a new node with the key and value provided.
+func newNode(key int, val interface{}) *node {
+	return &node{Key: key, Val: val}
 }

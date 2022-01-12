@@ -17,7 +17,7 @@ func NewBSTree() BSTree {
 
 // Insert will insert node into the BST. If the node has a duplicate key, it will be placed on the RIGHT subtree.
 func (bst *BSTree) Insert(key int, value interface{}) {
-	node := NewNode(key, value)
+	node := newNode(key, value)
 	bst.size++
 	// n is the iterating node variable
 	n := bst.root
@@ -26,7 +26,7 @@ func (bst *BSTree) Insert(key int, value interface{}) {
 		if n.Key <= node.Key {
 			// check if the node can be added to the right side
 			if n.Right == nil {
-				n.Right = &node
+				n.Right = node
 				return
 			} else {
 				n = n.Right
@@ -34,7 +34,7 @@ func (bst *BSTree) Insert(key int, value interface{}) {
 		} else {
 			// check if the node can be added to the left side
 			if n.Left == nil {
-				n.Left = &node
+				n.Left = node
 				return
 			} else {
 				n = n.Left
@@ -42,7 +42,7 @@ func (bst *BSTree) Insert(key int, value interface{}) {
 		}
 	}
 	// if the tree is empty
-	bst.root = &node
+	bst.root = node
 }
 
 // Delete will delete the closest occurance of the key to the root in the BST. It will return whether or not the tree was changed.
@@ -75,7 +75,6 @@ func (bst *BSTree) Delete(key int) bool {
 					}
 
 					ios.Left = curr.Left
-					// circular reference here
 					ios.Right = curr.Right
 					if parent == nil {
 						bst.root = ios
@@ -274,9 +273,8 @@ func (bst *BSTree) String() string {
 				str = str + "X "
 			} else {
 				nodeQ = append(nodeQ, nodeQ[0].Left)
-				qsize++
 				nodeQ = append(nodeQ, nodeQ[0].Right)
-				qsize++
+				qsize += 2
 				str = str + strconv.Itoa(nodeQ[0].Key) + " "
 			}
 			nodeQ = nodeQ[1:]
