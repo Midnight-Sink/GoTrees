@@ -2,13 +2,14 @@ package GoTrees
 
 // bTreeNode is a container for the array of nodes used in b tree nodes
 type bTreeNode struct {
-	nodes    []*keyValue
-	length   int
-	children []*bTreeNode
+	nodes       []*keyValue
+	length      int
+	children    []*bTreeNode
+	numChildren int
 }
 
 func newbTreeNode() bTreeNode {
-	return bTreeNode{nodes: make([]*keyValue, 0), length: 0, children: make([]*bTreeNode, 0)}
+	return bTreeNode{nodes: make([]*keyValue, 0), length: 0, children: make([]*bTreeNode, 0), numChildren: 0}
 }
 
 // AddToList adds a node to the nodes list, it does not do any b-tree insert logic

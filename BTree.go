@@ -36,37 +36,155 @@ func (bt *BTree) Contains(key int) bool {
 }
 
 func (bt *BTree) Keys() []int {
-	return nil
-}
-
-func (bt *BTree) Values() []interface{} {
-	return nil
-}
-
-func (bt *BTree) slice() []*keyValue {
-	nodes := make([]*keyValue, bt.size)
+	keys := make([]int, bt.size)
+	if bt.size == 0 {
+		return keys
+	}
 	i := 0
 	nodeStack := []*bTreeNode{}
 	indexStack := []int{}
 	stacksize := 0
-	n := bt.root
-	for n != nil || stacksize != 0 {
-		if n != nil {
-			for _, child := range n.children {
-				nodeStack = append(nodeStack, child)
+
+	nodeStack = append(nodeStack, bt.root)
+	indexStack = append(indexStack, 0)
+	stacksize++
+
+	for stacksize > 0 {
+		curr := nodeStack[stacksize-1]
+		if curr.length < indexStack[stacksize-1] {
+			// this node has had all of its children accounted for and can be popped
+			nodeStack = nodeStack[:stacksize-1]
+			indexStack = indexStack[:stacksize-1]
+			stacksize--
+		} else {
+			// this node may have children to be accounted for
+			if indexStack[stacksize-1] > 0 {
+				// parent node values inbetween the children
+				keys[i] = curr.nodes[indexStack[stacksize-1]-1].key
+				i++
+			}
+			if curr.numChildren > 0 {
+				// increment the parent index value
+				indexStack[stacksize-1]++
+				// this node is inner (or root) and must check children
+				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
 				indexStack = append(indexStack, 0)
 				stacksize++
+			} else {
+				// this node is a leaf and can have all of the kv pairs added
+				for _, kv := range curr.nodes {
+					keys[i] = kv.key
+					i++
+				}
+				nodeStack = nodeStack[:stacksize-1]
+				indexStack = indexStack[:stacksize-1]
+				stacksize--
 			}
-			n = n.Left
-		} else {
-			n = nodeStack[stacksize-1]
-			nodeStack = nodeStack[:stacksize-1]
-			stacksize--
-			nodes[i] = n
-			i++
-			n = n.Right
 		}
 	}
+
+	return keys
+}
+
+func (bt *BTree) Values() []interface{} {
+	vals := make([]interface{}, bt.size)
+	if bt.size == 0 {
+		return vals
+	}
+	i := 0
+	nodeStack := []*bTreeNode{}
+	indexStack := []int{}
+	stacksize := 0
+
+	nodeStack = append(nodeStack, bt.root)
+	indexStack = append(indexStack, 0)
+	stacksize++
+
+	for stacksize > 0 {
+		curr := nodeStack[stacksize-1]
+		if curr.length < indexStack[stacksize-1] {
+			// this node has had all of its children accounted for and can be popped
+			nodeStack = nodeStack[:stacksize-1]
+			indexStack = indexStack[:stacksize-1]
+			stacksize--
+		} else {
+			// this node may have children to be accounted for
+			if indexStack[stacksize-1] > 0 {
+				// parent node values inbetween the children
+				vals[i] = curr.nodes[indexStack[stacksize-1]-1].value
+				i++
+			}
+			if curr.numChildren > 0 {
+				// increment the parent index value
+				indexStack[stacksize-1]++
+				// this node is inner (or root) and must check children
+				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
+				indexStack = append(indexStack, 0)
+				stacksize++
+			} else {
+				// this node is a leaf and can have all of the kv pairs added
+				for _, kv := range curr.nodes {
+					vals[i] = kv.value
+					i++
+				}
+				nodeStack = nodeStack[:stacksize-1]
+				indexStack = indexStack[:stacksize-1]
+				stacksize--
+			}
+		}
+	}
+
+	return vals
+}
+
+func (bt *BTree) slice() []*keyValue {
+	nodes := make([]*keyValue, bt.size)
+	if bt.size == 0 {
+		return nodes
+	}
+	i := 0
+	nodeStack := []*bTreeNode{}
+	indexStack := []int{}
+	stacksize := 0
+
+	nodeStack = append(nodeStack, bt.root)
+	indexStack = append(indexStack, 0)
+	stacksize++
+
+	for stacksize > 0 {
+		curr := nodeStack[stacksize-1]
+		if curr.length < indexStack[stacksize-1] {
+			// this node has had all of its children accounted for and can be popped
+			nodeStack = nodeStack[:stacksize-1]
+			indexStack = indexStack[:stacksize-1]
+			stacksize--
+		} else {
+			// this node may have children to be accounted for
+			if indexStack[stacksize-1] > 0 {
+				// parent node values inbetween the children
+				nodes[i] = curr.nodes[indexStack[stacksize-1]-1]
+				i++
+			}
+			if curr.numChildren > 0 {
+				// increment the parent index value
+				indexStack[stacksize-1]++
+				// this node is inner (or root) and must check children
+				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
+				indexStack = append(indexStack, 0)
+				stacksize++
+			} else {
+				// this node is a leaf and can have all of the kv pairs added
+				for _, kv := range curr.nodes {
+					nodes[i] = kv
+					i++
+				}
+				nodeStack = nodeStack[:stacksize-1]
+				indexStack = indexStack[:stacksize-1]
+				stacksize--
+			}
+		}
+	}
+
 	return nodes
 }
 
