@@ -115,7 +115,7 @@ func (bst *BSTree) Delete(key int) bool {
 }
 
 // Find will find key in the BST and return the node. Find will return the closest occurance of key to the root.
-func (bst *BSTree) Find(key int) *node {
+func (bst *BSTree) Find(key int) *interface{} {
 	// n is the iterating node variable
 	n := bst.root
 	for n != nil {
@@ -123,7 +123,7 @@ func (bst *BSTree) Find(key int) *node {
 		if n.Key <= key {
 			// check if the node has the desired key
 			if n.Key == key {
-				return n
+				return &n.Val
 			} else if n.Right == nil {
 				return nil
 			} else {

@@ -11,12 +11,44 @@ type BTree struct {
 
 // NewBTree returns an empty b-tree. t is the degree of the b-tree.
 func NewBTree(t uint) BTree {
-	return BTree{root: nil, size: 0, t: t}
+	root := newbTreeNode()
+	return BTree{root: &root, size: 0, t: t}
 }
 
 // Insert will insert node into the BT. If the node has a duplicate key, it will be placed on the RIGHT subtree.
 func (bt *BTree) Insert(key int, value interface{}) {
+	// check the root for capacity (a new node will be allocated)
+	if bt.root.length > int(2*bt.t-1) {
+		mid, left, right := bt.root.SplitInTwo()
+		newRoot := newbTreeNode()
+		bt.root = &newRoot
+		bt.root.AddToList(&mid)
+		bt.root.AddChild(left)
+		bt.root.AddChild(right)
+	}
+
+	curr := bt.root
+	for curr.numChildren != 0 {
+		_, indexNext := curr.Search(key)
+		if curr.children[indexNext].length >= int(2*bt.t-1) {
+			// split the node
+			mid, left, right := bt.root.SplitInTwo()
+			curr.AddToList(&mid)
+			curr.InsertTwoChildren(left, right, indexNext)
+			// determine which new node is the next child
+			if mid.key <= key {
+				curr = &right
+			} else {
+				curr = &left
+			}
+		} else {
+			// progress to the next child node
+			curr = curr.children[indexNext]
+		}
+	}
 	bt.size++
+	// since this B tree preemtively splits nodes, this key-value will fit into this node
+	curr.AddToList(newKeyValue(key, value))
 }
 
 // Delete will delete the closest occurance of the key to the root in the B-Tree. It will return whether or not the tree was changed.
@@ -26,8 +58,24 @@ func (bt *BTree) Delete(key int) bool {
 }
 
 // Find will find key in the B-Tree and return the node. Find will return the closest occurance of key to the root.
-func (bt *BTree) Find(key int) *node {
-	return nil
+func (bt *BTree) Find(key int) *interface{} {
+	curr := bt.root
+
+	for {
+		res, i := curr.Search(key)
+		if res != nil {
+			// the node was found
+			return &res.value
+		} else {
+			if curr.numChildren == 0 {
+				// the node wasn't found and there are no more children to check
+				return nil
+			} else {
+				// check the next child
+				curr = curr.children[i]
+			}
+		}
+	}
 }
 
 // Contains determines if key exists in the B-Tree and returns the result.

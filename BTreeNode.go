@@ -48,7 +48,7 @@ func (btNode *bTreeNode) RemoveFromList(key int) {
 	}
 }
 
-// Search will complete a binary search for the given key and return the node and its index in the list. If it is not found, it will return (nil, -1)
+// Search will complete a binary search for the given key and return the node and its index in the list. If it is not found, it will return (nil, index of where the node would be)
 func (btNode *bTreeNode) Search(key int) (*keyValue, int) {
 	min := 0
 	max := btNode.length
@@ -65,5 +65,24 @@ func (btNode *bTreeNode) Search(key int) (*keyValue, int) {
 		midPoint = (min + max) / 2
 	}
 
-	return nil, -1
+	return nil, midPoint
+}
+
+func (btn *bTreeNode) SplitInTwo() (keyValue, bTreeNode, bTreeNode) {
+	mid := int(btn.length / 2)
+	left := bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: btn.children[:mid], numChildren: btn.numChildren / 2}
+	right := bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: btn.children[mid+1:], numChildren: btn.numChildren / 2}
+	return *btn.nodes[mid], left, right
+}
+
+func (btn *bTreeNode) AddChild(other bTreeNode) {
+	btn.children = append(btn.children, &other)
+	btn.numChildren++
+}
+
+func (btn *bTreeNode) InsertTwoChildren(left bTreeNode, right bTreeNode, index int) {
+	btn.children = append(btn.children[:index+2], btn.children[index:]...)
+	btn.children[index] = &left
+	btn.children[index] = &right
+	btn.numChildren += 2
 }
