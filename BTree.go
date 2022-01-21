@@ -113,11 +113,11 @@ func (bt *BTree) Keys() []int {
 				i++
 			}
 			if curr.numChildren > 0 {
-				// increment the parent index value
-				indexStack[stacksize-1]++
 				// this node is inner (or root) and must check children
 				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
 				indexStack = append(indexStack, 0)
+				// increment the parent index value
+				indexStack[stacksize-1]++
 				stacksize++
 			} else {
 				// this node is a leaf and can have all of the kv pairs added
@@ -164,11 +164,11 @@ func (bt *BTree) Values() []interface{} {
 				i++
 			}
 			if curr.numChildren > 0 {
-				// increment the parent index value
-				indexStack[stacksize-1]++
 				// this node is inner (or root) and must check children
 				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
 				indexStack = append(indexStack, 0)
+				// increment the parent index value
+				indexStack[stacksize-1]++
 				stacksize++
 			} else {
 				// this node is a leaf and can have all of the kv pairs added
@@ -215,11 +215,11 @@ func (bt *BTree) slice() []*keyValue {
 				i++
 			}
 			if curr.numChildren > 0 {
-				// increment the parent index value
-				indexStack[stacksize-1]++
 				// this node is inner (or root) and must check children
 				nodeStack = append(nodeStack, curr.children[indexStack[stacksize-1]])
 				indexStack = append(indexStack, 0)
+				// increment the parent index value
+				indexStack[stacksize-1]++
 				stacksize++
 			} else {
 				// this node is a leaf and can have all of the kv pairs added

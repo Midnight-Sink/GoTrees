@@ -20,8 +20,6 @@ func TestBTreeSlice(t *testing.T) {
 	BT.Insert(12, nil)
 	BT.Insert(13, nil)
 
-	t.Fatal()
-
 	nodes := BT.slice()
 	expected := []int{8, 9, 10, 11, 12, 13, 14}
 	for i, n := range nodes {
