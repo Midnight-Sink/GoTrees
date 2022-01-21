@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// It may be a good idea to create the tree manually for testing rather than have circular reliance on insert/search/delete
+// It is a good idea to create the tree manually for testing rather than have circular reliance on insert/search/delete
 
 func TestBSTEmptyAllOps(t *testing.T) {
 	BST := NewBSTree()

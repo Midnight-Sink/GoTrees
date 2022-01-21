@@ -7,8 +7,10 @@ import (
 	"testing"
 )
 
+const T = 0
+
 func TestBTreeSlice(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 
 	BT.Insert(10, nil)
 	BT.Insert(11, nil)
@@ -17,6 +19,8 @@ func TestBTreeSlice(t *testing.T) {
 	BT.Insert(14, nil)
 	BT.Insert(12, nil)
 	BT.Insert(13, nil)
+
+	t.Fatal()
 
 	nodes := BT.slice()
 	expected := []int{8, 9, 10, 11, 12, 13, 14}
@@ -30,7 +34,7 @@ func TestBTreeSlice(t *testing.T) {
 }
 
 func TestBTreeKeys(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 
 	BT.Insert(10, nil)
 	BT.Insert(11, nil)
@@ -50,7 +54,7 @@ func TestBTreeKeys(t *testing.T) {
 }
 
 func TestBTreeValues(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 
 	BT.Insert(10, 10)
 	BT.Insert(11, 11)
@@ -70,7 +74,7 @@ func TestBTreeValues(t *testing.T) {
 }
 
 func TestBTreeInsert(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -92,7 +96,7 @@ func TestBTreeInsert(t *testing.T) {
 }
 
 func TestBTreeHeight(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 
 	h := BT.Height()
 	if h != 0 {
@@ -114,7 +118,7 @@ func TestBTreeHeight(t *testing.T) {
 }
 
 func TestBTreeFind(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -134,7 +138,7 @@ func TestBTreeFind(t *testing.T) {
 }
 
 func TestBTreeContains(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -154,7 +158,7 @@ func TestBTreeContains(t *testing.T) {
 }
 
 func TestBTreeDelete(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 	keys := rand.Perm(nRAND)
 
 	for _, key := range keys {
@@ -180,7 +184,7 @@ func TestBTreeDelete(t *testing.T) {
 }
 
 func TestBTreeString(t *testing.T) {
-	BT := NewBTree(10)
+	BT := NewBTree(T)
 
 	BT.Insert(10, 10)
 	BT.Insert(11, 11)

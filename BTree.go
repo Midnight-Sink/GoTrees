@@ -1,6 +1,8 @@
 package GoTrees
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // BTree is a b-tree using key-value nodes.
 type BTree struct {
@@ -9,16 +11,16 @@ type BTree struct {
 	t    uint
 }
 
-// NewBTree returns an empty b-tree. t is the degree of the b-tree.
+// NewBTree returns an empty b-tree. The degree of the b tree is 2*t+2. (This ensures valid max-degree. Since this b-tree splits preemptively the degree must be even so it will split with an odd number of pairs)
 func NewBTree(t uint) BTree {
 	root := newbTreeNode()
-	return BTree{root: &root, size: 0, t: t}
+	return BTree{root: &root, size: 0, t: 2*t + 2}
 }
 
 // Insert will insert node into the BT. If the node has a duplicate key, it will be placed on the RIGHT subtree.
 func (bt *BTree) Insert(key int, value interface{}) {
 	// check the root for capacity (a new node will be allocated)
-	if bt.root.length > int(2*bt.t-1) {
+	if bt.root.length > int(bt.t) {
 		mid, left, right := bt.root.SplitInTwo()
 		newRoot := newbTreeNode()
 		bt.root = &newRoot
@@ -26,20 +28,19 @@ func (bt *BTree) Insert(key int, value interface{}) {
 		bt.root.AddChild(left)
 		bt.root.AddChild(right)
 	}
-
 	curr := bt.root
 	for curr.numChildren != 0 {
 		_, indexNext := curr.Search(key)
-		if curr.children[indexNext].length >= int(2*bt.t-1) {
+		if curr.children[indexNext].length > int(bt.t) {
 			// split the node
-			mid, left, right := bt.root.SplitInTwo()
+			mid, left, right := curr.children[indexNext].SplitInTwo()
 			curr.AddToList(&mid)
 			curr.InsertTwoChildren(left, right, indexNext)
 			// determine which new node is the next child
 			if mid.key <= key {
-				curr = &right
+				curr = right
 			} else {
-				curr = &left
+				curr = left
 			}
 		} else {
 			// progress to the next child node

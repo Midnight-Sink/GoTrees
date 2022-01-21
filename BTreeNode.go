@@ -68,21 +68,32 @@ func (btNode *bTreeNode) Search(key int) (*keyValue, int) {
 	return nil, midPoint
 }
 
-func (btn *bTreeNode) SplitInTwo() (keyValue, bTreeNode, bTreeNode) {
+func (btn *bTreeNode) SplitInTwo() (keyValue, *bTreeNode, *bTreeNode) {
 	mid := int(btn.length / 2)
-	left := bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: btn.children[:mid], numChildren: btn.numChildren / 2}
-	right := bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: btn.children[mid+1:], numChildren: btn.numChildren / 2}
+	var left *bTreeNode = nil
+	var right *bTreeNode = nil
+	if btn.numChildren > 0 {
+		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: btn.children[:mid], numChildren: btn.numChildren / 2}
+		right = &bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: btn.children[mid+1:], numChildren: btn.numChildren / 2}
+	} else {
+		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: make([]*bTreeNode, 0), numChildren: 0}
+		right = &bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: make([]*bTreeNode, 0), numChildren: 0}
+	}
 	return *btn.nodes[mid], left, right
 }
 
-func (btn *bTreeNode) AddChild(other bTreeNode) {
-	btn.children = append(btn.children, &other)
+func (btn *bTreeNode) AddChild(other *bTreeNode) {
+	btn.children = append(btn.children, other)
 	btn.numChildren++
 }
 
-func (btn *bTreeNode) InsertTwoChildren(left bTreeNode, right bTreeNode, index int) {
-	btn.children = append(btn.children[:index+2], btn.children[index:]...)
-	btn.children[index] = &left
-	btn.children[index] = &right
-	btn.numChildren += 2
+func (btn *bTreeNode) InsertTwoChildren(left *bTreeNode, right *bTreeNode, index int) {
+	// making room for children nodes
+	btn.children = append(btn.children, nil)
+	for i := index; i < btn.numChildren; i++ {
+		btn.children[i+1] = btn.children[i]
+	}
+	btn.children[index] = left
+	btn.children[index+1] = right
+	btn.numChildren += 1
 }

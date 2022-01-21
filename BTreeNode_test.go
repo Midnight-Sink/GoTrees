@@ -78,3 +78,45 @@ func TestBTreeNodeBinarySearch(t *testing.T) {
 		t.Fatal("Node search did not return the right result, should have been (nil, -1)")
 	}
 }
+
+func TestBTreeNodeSplitInTwo(t *testing.T) {
+	btn := newbTreeNode()
+	keys := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	for _, key := range keys {
+		btn.AddToList(newKeyValue(key, key))
+	}
+
+	mid, left, right := btn.SplitInTwo()
+
+	// mid
+	if mid.key != 5 {
+		t.Error("Mid key-value is not correct, expected 5 but got " + strconv.Itoa(mid.key))
+	}
+	// left
+	realLen := len(left.nodes)
+	if left.length != 4 {
+		t.Error("Left numChildren incorrect, expected 4 but got " + strconv.Itoa(left.numChildren))
+	} else if realLen != 4 {
+		t.Error("Left children length incorrect, expected 4 but got " + strconv.Itoa(realLen))
+	} else {
+		for i, n := range left.nodes {
+			if n.key != keys[i] {
+				t.Error("Value not correct in left node: expected " + strconv.Itoa(keys[i]) + " but got " + strconv.Itoa(n.key))
+			}
+		}
+	}
+	// right
+	realLen = len(right.nodes)
+	if right.length != 4 {
+		t.Error("Right numChildren incorrect, expected 4 but got " + strconv.Itoa(right.numChildren))
+	} else if realLen != 4 {
+		t.Error("Right children length incorrect, expected 4 but got " + strconv.Itoa(realLen))
+	} else {
+		for i, n := range right.nodes {
+			if n.key != keys[i+5] {
+				t.Error("Value not correct in right node: expected " + strconv.Itoa(keys[i+5]) + " but got " + strconv.Itoa(n.key))
+			}
+		}
+	}
+}
