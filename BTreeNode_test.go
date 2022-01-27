@@ -7,7 +7,7 @@ import (
 )
 
 func TestBTreeNodeAdd(t *testing.T) {
-	btn := newbTreeNode()
+	btn := newbTreeNode(nAlloc * T)
 	keys := rand.Perm(nRAND)
 
 	for _, key := range keys {
@@ -29,7 +29,7 @@ func TestBTreeNodeAdd(t *testing.T) {
 }
 
 func TestBTreeNodeRemove(t *testing.T) {
-	btn := newbTreeNode()
+	btn := newbTreeNode(nAlloc * T)
 	keys := rand.Perm(nRAND)
 
 	btn.AddToList(newKeyValue(1, 1))
@@ -56,7 +56,7 @@ func TestBTreeNodeRemove(t *testing.T) {
 }
 
 func TestBTreeNodeBinarySearch(t *testing.T) {
-	btn := newbTreeNode()
+	btn := newbTreeNode(nAlloc * T)
 	keys := rand.Perm(nRAND)
 
 	for _, key := range keys {
@@ -80,14 +80,14 @@ func TestBTreeNodeBinarySearch(t *testing.T) {
 }
 
 func TestBTreeNodeSplitInTwo(t *testing.T) {
-	btn := newbTreeNode()
+	btn := newbTreeNode(nAlloc * T)
 	keys := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 	for _, key := range keys {
 		btn.AddToList(newKeyValue(key, key))
 	}
 
-	mid, left, right := btn.SplitInTwo()
+	mid, left, right := btn.SplitInTwo(nAlloc * T)
 
 	// mid
 	if mid.key != 5 {

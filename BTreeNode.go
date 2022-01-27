@@ -8,8 +8,8 @@ type bTreeNode struct {
 	numChildren int
 }
 
-func newbTreeNode() bTreeNode {
-	return bTreeNode{nodes: make([]*keyValue, 0), length: 0, children: make([]*bTreeNode, 0), numChildren: 0}
+func newbTreeNode(alloc int) bTreeNode {
+	return bTreeNode{nodes: make([]*keyValue, alloc), length: 0, children: make([]*bTreeNode, alloc), numChildren: 0}
 }
 
 // AddToList adds a node to the nodes list, it does not do any b-tree insert logic
@@ -68,31 +68,52 @@ func (btNode *bTreeNode) Search(key int) (*keyValue, int) {
 	return nil, midPoint
 }
 
-func (btn *bTreeNode) SplitInTwo() (keyValue, *bTreeNode, *bTreeNode) {
-	mid := int(btn.length / 2)
+// SplitInTwo splits a node into two subnodes, and takes the middle out
+func (btn *bTreeNode) SplitInTwo(alloc int) (*keyValue, *bTreeNode, *bTreeNode) {
+	mid := btn.length / 2
 	var left *bTreeNode = nil
 	var right *bTreeNode = nil
+
+	nodeAlloc := max(alloc, btn.length/2)
+	childAlloc := max(alloc, btn.length/2+1)
+
 	if btn.numChildren > 0 {
-		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: btn.children[:mid], numChildren: btn.numChildren / 2}
-		right = &bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: btn.children[mid+1:], numChildren: btn.numChildren / 2}
+		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: btn.children[:mid+1], numChildren: btn.numChildren / 2}
+		right = &bTreeNode{nodes: make([]*keyValue, nodeAlloc), length: btn.length / 2, children: make([]*bTreeNode, childAlloc), numChildren: btn.numChildren / 2}
+		copy(right.children, btn.children[mid+1:])
 	} else {
-		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: make([]*bTreeNode, 0), numChildren: 0}
-		right = &bTreeNode{nodes: btn.nodes[mid+1:], length: btn.length / 2, children: make([]*bTreeNode, 0), numChildren: 0}
+		// splitting a leaf, these nodes will need new child lists allocated
+		left = &bTreeNode{nodes: btn.nodes[:mid], length: btn.length / 2, children: make([]*bTreeNode, btn.length/2+1), numChildren: 0}
+		right = &bTreeNode{nodes: make([]*keyValue, nodeAlloc), length: btn.length / 2, children: make([]*bTreeNode, alloc+1), numChildren: 0}
 	}
-	return *btn.nodes[mid], left, right
+	// Only copy the right hand nodes, the left memory can be recycled
+	copy(right.nodes, btn.nodes[mid+1:])
+	return btn.nodes[mid], left, right
 }
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+// AddChild adds a child to the list
 func (btn *bTreeNode) AddChild(other *bTreeNode) {
 	btn.children = append(btn.children, other)
 	btn.numChildren++
 }
 
+// InsertTwoChildren adds 2 children to the child list, overwriting the child at index
 func (btn *bTreeNode) InsertTwoChildren(left *bTreeNode, right *bTreeNode, index int) {
 	// making room for children nodes
 	btn.children = append(btn.children, nil)
-	for i := index; i < btn.numChildren; i++ {
+	// shift over current children
+	for i := btn.numChildren - 1; i >= index; i-- {
 		btn.children[i+1] = btn.children[i]
 	}
+	// assign new children (note this will overwrite an existing node on purpose)
 	btn.children[index] = left
 	btn.children[index+1] = right
 	btn.numChildren += 1

@@ -8,9 +8,10 @@ import (
 )
 
 const T = 0
+const nAlloc = .5
 
 func TestBTreeSlice(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 
 	BT.Insert(10, nil)
 	BT.Insert(11, nil)
@@ -32,7 +33,7 @@ func TestBTreeSlice(t *testing.T) {
 }
 
 func TestBTreeKeys(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 
 	BT.Insert(10, nil)
 	BT.Insert(11, nil)
@@ -52,7 +53,7 @@ func TestBTreeKeys(t *testing.T) {
 }
 
 func TestBTreeValues(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 
 	BT.Insert(10, 10)
 	BT.Insert(11, 11)
@@ -72,7 +73,7 @@ func TestBTreeValues(t *testing.T) {
 }
 
 func TestBTreeInsert(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -83,6 +84,9 @@ func TestBTreeInsert(t *testing.T) {
 		if BT.size != uint64(i+1) {
 			t.Fatal("BT size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BT.size)) + ". ")
 		}
+		// t.Log("Inserted key: " + strconv.Itoa(key))
+		// t.Log(BT.String())
+		// t.Log("==================================")
 	}
 	sort.Ints(keys)
 	BTkeys := BT.Keys()
@@ -94,29 +98,32 @@ func TestBTreeInsert(t *testing.T) {
 }
 
 func TestBTreeHeight(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 
 	h := BT.Height()
 	if h != 0 {
 		t.Fatal("Height was expected to be 0 but was " + sc.Itoa(int(h)))
 	}
 
-	BT.Insert(10, 10)
-	BT.Insert(11, 11)
-	BT.Insert(9, 9)
-	BT.Insert(8, 8)
-	BT.Insert(14, 14)
-	BT.Insert(12, 12)
-	BT.Insert(13, 13)
+	keys := make([]int, nRAND)
+	for i := 0; i < nRAND; i++ {
+		// nRAND - 1 to ensure at least one duplicate key
+		key := rand.Intn(nRAND - 1)
+		keys[i] = key
+		BT.Insert(key, nil)
+		if BT.size != uint64(i+1) {
+			t.Fatal("BT size incorrect, expected " + sc.Itoa(i+1) + " but got " + sc.Itoa(int(BT.size)) + ". ")
+		}
+	}
 
 	h = BT.Height()
-	if h != 5 {
-		t.Fatal("Height was expected to be 5 but was " + sc.Itoa(int(h)))
+	if h != 6 {
+		t.Fatal("Height was expected to be 6 but was " + sc.Itoa(int(h)))
 	}
 }
 
 func TestBTreeFind(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -136,7 +143,7 @@ func TestBTreeFind(t *testing.T) {
 }
 
 func TestBTreeContains(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 	keys := make([]int, nRAND)
 
 	for i := 0; i < nRAND; i++ {
@@ -156,7 +163,7 @@ func TestBTreeContains(t *testing.T) {
 }
 
 func TestBTreeDelete(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 	keys := rand.Perm(nRAND)
 
 	for _, key := range keys {
@@ -182,7 +189,7 @@ func TestBTreeDelete(t *testing.T) {
 }
 
 func TestBTreeString(t *testing.T) {
-	BT := NewBTree(T)
+	BT := NewBTree(T, nAlloc)
 
 	BT.Insert(10, 10)
 	BT.Insert(11, 11)
@@ -191,8 +198,9 @@ func TestBTreeString(t *testing.T) {
 	BT.Insert(14, 14)
 	BT.Insert(12, 12)
 	BT.Insert(13, 13)
+	t.Log(BT.String())
 
-	expected := "10 \n9 11 \n8 X X 14 \nX X 12 X \nX 13 \nX X \n"
+	expected := "[10 12 ] \n[8 9 ] [11 ] [13 14 ] \nX X X X X \n"
 	actual := BT.String()
 	if actual != expected {
 		t.Fatal("Expected output: \n" + expected + "\n but got \n" + BT.String())

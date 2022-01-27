@@ -6,25 +6,31 @@ import (
 
 // BTree is a b-tree using key-value nodes.
 type BTree struct {
-	root *bTreeNode
-	size uint64
-	t    uint
+	root      *bTreeNode
+	size      uint64
+	t         uint
+	initAlloc int
 }
 
 // NewBTree returns an empty b-tree. The degree of the b tree is 2*t+2. (This ensures valid max-degree. Since this b-tree splits preemptively the degree must be even so it will split with an odd number of pairs)
-func NewBTree(t uint) BTree {
-	root := newbTreeNode()
-	return BTree{root: &root, size: 0, t: 2*t + 2}
+func NewBTree(t uint, alloc float32) BTree {
+	if alloc > 1 {
+		alloc = 1
+	} else if alloc < 0 {
+		alloc = 0
+	}
+	root := newbTreeNode(int(alloc * float32(t)))
+	return BTree{root: &root, size: 0, t: 2*t + 2, initAlloc: int(alloc * float32(t))}
 }
 
-// Insert will insert node into the BT. If the node has a duplicate key, it will be placed on the RIGHT subtree.
+// Insert will insert node into the BT. A duplicate tree could be placed in the left or right subtree to maintain balance.
 func (bt *BTree) Insert(key int, value interface{}) {
 	// check the root for capacity (a new node will be allocated)
 	if bt.root.length > int(bt.t) {
-		mid, left, right := bt.root.SplitInTwo()
-		newRoot := newbTreeNode()
+		mid, left, right := bt.root.SplitInTwo(bt.initAlloc)
+		newRoot := newbTreeNode(bt.initAlloc)
 		bt.root = &newRoot
-		bt.root.AddToList(&mid)
+		bt.root.AddToList(mid)
 		bt.root.AddChild(left)
 		bt.root.AddChild(right)
 	}
@@ -33,8 +39,8 @@ func (bt *BTree) Insert(key int, value interface{}) {
 		_, indexNext := curr.Search(key)
 		if curr.children[indexNext].length > int(bt.t) {
 			// split the node
-			mid, left, right := curr.children[indexNext].SplitInTwo()
-			curr.AddToList(&mid)
+			mid, left, right := curr.children[indexNext].SplitInTwo(bt.initAlloc)
+			curr.AddToList(mid)
 			curr.InsertTwoChildren(left, right, indexNext)
 			// determine which new node is the next child
 			if mid.key <= key {
@@ -50,12 +56,6 @@ func (bt *BTree) Insert(key int, value interface{}) {
 	bt.size++
 	// since this B tree preemtively splits nodes, this key-value will fit into this node
 	curr.AddToList(newKeyValue(key, value))
-}
-
-// Delete will delete the closest occurance of the key to the root in the B-Tree. It will return whether or not the tree was changed.
-func (bt *BTree) Delete(key int) bool {
-	bt.size--
-	return false
 }
 
 // Find will find key in the B-Tree and return the node. Find will return the closest occurance of key to the root.
@@ -243,33 +243,21 @@ func (bt *BTree) Clear() {
 	bt.size = 0
 }
 
+// Height calculates the height of the B tree
 func (bt *BTree) Height() uint64 {
-	if bt.root == nil {
+	if bt.root == nil || bt.root.length == 0 {
 		return 0
 	}
-
 	height := uint64(0)
-	nodeQ := []*bTreeNode{}
-	qsize := 0
+	curr := bt.root
 
-	nodeQ = append(nodeQ, bt.root)
-	qsize++
-
-	for {
-		if qsize == 0 {
-			return height
-		}
-		nodeCount := qsize
-		for nodeCount > 0 {
-			for _, child := range nodeQ[0].children {
-				nodeQ = append(nodeQ, child)
-				qsize++
-			}
-			nodeQ = nodeQ[1:]
-			qsize--
-			nodeCount--
-		}
+	for curr.numChildren > 0 {
+		height++
+		// height calcuated by following left side of tree (works since tree is always pefectly balanced)
+		curr = curr.children[0]
 	}
+	// Adding 1 for the missed iteration on the leaf node, and adding 1 more since the loop counts "links" rather than nodes
+	return height + 2
 }
 
 // String will return the B-Tree represented as a string. Each level will be printed on a new line. Only keys will be printed. "X" represents a nil node. After the X is printed, all subsequent levels will not include this nodes children.
@@ -310,4 +298,28 @@ func (bt *BTree) String() string {
 
 func (bt *BTree) Size() uint64 {
 	return bt.size
+}
+
+// Delete will delete the closest occurance of the key to the root in the B-Tree. It will return whether or not the tree was changed.
+func (bt *BTree) Delete(key int) bool {
+	var parent *bTreeNode = nil
+	curr := bt.root
+
+	for {
+		res, i := curr.Search(key)
+		if res != nil {
+			// the node was found
+			bt.size--
+			return true
+		} else {
+			if curr.numChildren == 0 {
+				// the node wasn't found and there are no more children to check
+				return false
+			} else {
+				// check the next child
+				parent = curr
+				curr = curr.children[i]
+			}
+		}
+	}
 }
