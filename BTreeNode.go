@@ -13,15 +13,15 @@ func newbTreeNode(alloc int) bTreeNode {
 }
 
 // AddToList adds a node to the nodes list, it does not do any b-tree insert logic
-func (btNode *bTreeNode) AddToList(n *keyValue) {
+func (btn *bTreeNode) AddToList(n *keyValue) {
 	min := 0
-	max := btNode.length
+	max := btn.length
 	midPoint := (min + max) / 2
 
 	for min < max {
-		if btNode.nodes[midPoint].key > n.key {
+		if btn.nodes[midPoint].key > n.key {
 			max = midPoint
-		} else if btNode.nodes[midPoint].key < n.key {
+		} else if btn.nodes[midPoint].key < n.key {
 			min = midPoint + 1
 		} else {
 			// this means node is duplicate key
@@ -30,37 +30,37 @@ func (btNode *bTreeNode) AddToList(n *keyValue) {
 		midPoint = (min + max) / 2
 	}
 
-	if btNode.length <= midPoint || btNode.length == 0 {
-		btNode.nodes = append(btNode.nodes, n)
+	if btn.length <= midPoint || btn.length == 0 {
+		btn.nodes = append(btn.nodes, n)
 	} else {
-		btNode.nodes = append(btNode.nodes[:midPoint+1], btNode.nodes[midPoint:]...)
-		btNode.nodes[midPoint] = n
+		btn.nodes = append(btn.nodes[:midPoint+1], btn.nodes[midPoint:]...)
+		btn.nodes[midPoint] = n
 	}
-	btNode.length++
+	btn.length++
 }
 
 // RemoveFromList removes an element from the nodes list, it does not do any b-tree delete logic
-func (btNode *bTreeNode) RemoveFromList(key int) {
-	_, i := btNode.Search(key)
+func (btn *bTreeNode) RemoveFromList(key int) {
+	_, i := btn.Search(key)
 	if i >= 0 {
-		btNode.length--
-		btNode.nodes = append(btNode.nodes[:i], btNode.nodes[i+1:]...)
+		btn.length--
+		btn.nodes = append(btn.nodes[:i], btn.nodes[i+1:]...)
 	}
 }
 
 // Search will complete a binary search for the given key and return the node and its index in the list. If it is not found, it will return (nil, index of where the node would be)
-func (btNode *bTreeNode) Search(key int) (*keyValue, int) {
+func (btn *bTreeNode) Search(key int) (*keyValue, int) {
 	min := 0
-	max := btNode.length
+	max := btn.length
 	midPoint := (min + max) / 2
 
 	for min < max {
-		if btNode.nodes[midPoint].key > key {
+		if btn.nodes[midPoint].key > key {
 			max = midPoint
-		} else if btNode.nodes[midPoint].key < key {
+		} else if btn.nodes[midPoint].key < key {
 			min = midPoint + 1
 		} else {
-			return btNode.nodes[midPoint], midPoint
+			return btn.nodes[midPoint], midPoint
 		}
 		midPoint = (min + max) / 2
 	}
@@ -103,6 +103,13 @@ func max(a, b int) int {
 func (btn *bTreeNode) AddChild(other *bTreeNode) {
 	btn.children = append(btn.children, other)
 	btn.numChildren++
+}
+
+func (btn *bTreeNode) DeleteChild(index int) {
+	if index >= 0 {
+		btn.numChildren--
+		btn.children = append(btn.children[:index], btn.children[index+1:]...)
+	}
 }
 
 // InsertTwoChildren adds 2 children to the child list, overwriting the child at index
