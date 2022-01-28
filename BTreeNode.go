@@ -105,6 +105,7 @@ func (btn *bTreeNode) AddChild(other *bTreeNode) {
 	btn.numChildren++
 }
 
+// DeleteChild removes a child at index from the child list
 func (btn *bTreeNode) DeleteChild(index int) {
 	if index >= 0 {
 		btn.numChildren--

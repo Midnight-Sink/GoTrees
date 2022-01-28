@@ -309,6 +309,21 @@ func (bt *BTree) Delete(key int) bool {
 		res, i := curr.Search(key)
 		if res != nil {
 			// the node was found
+			if curr.numChildren == 0 {
+				// this node is a leaf node
+				if parent == nil || curr.length-1 > int(bt.t)-1 {
+					// the root is a leaf, can remove without rearrangment regardless of node length
+					// or this node has capacity to shrink so we can delete without rearrangment
+					curr.RemoveFromList(i)
+				} else {
+					// no room to shrink, removing from this node will require rearrangment of the tree
+				}
+			} else {
+				// this node is an interior node
+				if curr.children[i].length-1 > int(bt.t)-1 {
+					// replace the deleted node with the in order predecessor
+				}
+			}
 			bt.size--
 			return true
 		} else {
