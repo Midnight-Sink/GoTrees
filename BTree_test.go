@@ -178,7 +178,7 @@ func TestBTreeDeleteSimpleCases(t *testing.T) {
 	BT.Insert(18, 18)
 	BT.Insert(20, 20)
 
-	BT.Delete(20)
+	BT.Delete(10)
 	t.Log(BT.String())
 	BT.Delete(18)
 	t.Log(BT.String())

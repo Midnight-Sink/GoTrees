@@ -1,6 +1,7 @@
 package GoTrees
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -353,7 +354,8 @@ func (bt *BTree) Delete(key int) bool {
 				//	   [#?] [#] [#?] <-- traversal is going to the middle child, looking at the two (possible) siblings
 				if curr.children[i].length <= t {
 					// premptive merging is required
-					validateNextChildSize(curr, leftSibling, rightSibling, i, t)
+					fmt.Println(curr.String())
+					i = validateNextChildSize(curr, leftSibling, rightSibling, i, t)
 				}
 				curr = curr.children[i]
 			}
@@ -361,24 +363,33 @@ func (bt *BTree) Delete(key int) bool {
 	}
 }
 
-func validateNextChildSize(curr *bTreeNode, leftSibling, rightSibling bool, i int, t int) {
-	if curr.children[i].length <= t {
+func validateNextChildSize(curr *bTreeNode, leftSibling, rightSibling bool, i int, t int) int {
+	if curr.children[i].length < t {
 		// premptive merging is required
 		if leftSibling && curr.children[i-1].length > t {
 			// there is a left sibling with capacity
+			fmt.Println("V Borrowing Left")
 			borrowLeft(curr, curr.children[i-1], curr.children[i], i)
 		} else if rightSibling && curr.children[i+1].length > t {
 			// there is a right sibling with capacity
+			fmt.Println("V Borrowing Right")
 			borrowRight(curr, curr.children[i+1], curr.children[i], i)
 		} else {
 			// must merge with one sibling
 			if leftSibling {
+				fmt.Println("V Merge Left")
 				parentMerge(curr, curr.children[i-1], curr.children[i], i)
 			} else {
+				fmt.Println("V Merge Right")
 				parentMerge(curr, curr.children[i], curr.children[i+1], i)
 			}
+			// t-1 is where the node from the parent will be placed
+			return t - 1
 		}
+	} else {
+		fmt.Println("V No Action")
 	}
+	return i
 }
 
 // borrowLeft is called when the current node can borrow a KV from the parent who can then borrow a KV from the left sibling of curr
@@ -403,6 +414,10 @@ func borrowRight(parent, right, curr *bTreeNode, index int) {
 
 // parentMerge is called when it cannot borrow from both left and right silbings
 func parentMerge(parent, left, curr *bTreeNode, index int) {
+	// the index returned from search gives the child index if the KV is not found. Must -1 to find the parent KV
+	if index <= parent.length {
+		index = parent.length - 1
+	}
 	// add the node from the parent in the merge
 	left.AddToList(parent.nodes[index])
 	parent.RemoveFromListAt(index)
@@ -415,6 +430,7 @@ func parentMerge(parent, left, curr *bTreeNode, index int) {
 // findAndDeleteIOP find and delete in order predecessor
 func findAndDeleteIOP(start *bTreeNode, t int) *keyValue {
 	for start.numChildren != 0 {
+		// fixed sibling flags since this follows the right side
 		validateNextChildSize(start, true, false, start.numChildren-1, t)
 		start = start.children[start.numChildren-1]
 	}
@@ -426,6 +442,7 @@ func findAndDeleteIOP(start *bTreeNode, t int) *keyValue {
 // findAndDeleteIOS find and delete in order successor
 func findAndDeleteIOS(start *bTreeNode, t int) *keyValue {
 	for start.numChildren != 0 {
+		// fixed sibling flags since this follows the left side
 		validateNextChildSize(start, false, true, 0, t)
 		start = start.children[0]
 	}

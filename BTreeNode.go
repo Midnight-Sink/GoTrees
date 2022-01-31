@@ -1,5 +1,7 @@
 package GoTrees
 
+import "strconv"
+
 // bTreeNode is a container for the array of nodes used in b tree nodes
 type bTreeNode struct {
 	nodes       []*keyValue
@@ -141,4 +143,13 @@ func (btn *bTreeNode) InsertTwoChildren(left *bTreeNode, right *bTreeNode, index
 	btn.children[index] = left
 	btn.children[index+1] = right
 	btn.numChildren += 1
+}
+
+func (btn *bTreeNode) String() string {
+	str := "["
+	for _, k := range btn.nodes {
+		str += strconv.Itoa(k.key) + " "
+	}
+	str += "]"
+	return str
 }
