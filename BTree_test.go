@@ -162,6 +162,30 @@ func TestBTreeContains(t *testing.T) {
 	}
 }
 
+func TestBTreeDeleteSimpleCases(t *testing.T) {
+	BT := NewBTree(T, nAlloc)
+
+	BT.Insert(10, 10)
+	BT.Insert(11, 11)
+	BT.Insert(9, 9)
+	BT.Insert(8, 8)
+	BT.Insert(14, 14)
+	BT.Insert(12, 12)
+	BT.Insert(13, 13)
+	BT.Insert(15, 15)
+	BT.Insert(16, 16)
+	BT.Insert(17, 17)
+	BT.Insert(18, 18)
+	BT.Insert(20, 20)
+
+	BT.Delete(20)
+	t.Log(BT.String())
+	BT.Delete(18)
+	t.Log(BT.String())
+
+	t.Fatal()
+}
+
 func TestBTreeDelete(t *testing.T) {
 	BT := NewBTree(T, nAlloc)
 	keys := rand.Perm(nRAND)

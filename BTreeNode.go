@@ -39,6 +39,13 @@ func (btn *bTreeNode) AddToList(n *keyValue) {
 	btn.length++
 }
 
+func (btn *bTreeNode) mergeRightSilbing(right *bTreeNode) {
+	btn.nodes = append(btn.nodes, right.nodes...)
+	btn.length += right.length
+	btn.children = append(btn.children, right.children...)
+	btn.numChildren += right.numChildren
+}
+
 // RemoveFromList removes an element from the nodes list, it does not do any b-tree delete logic
 func (btn *bTreeNode) RemoveFromList(key int) {
 	_, i := btn.Search(key)
@@ -46,6 +53,15 @@ func (btn *bTreeNode) RemoveFromList(key int) {
 		btn.length--
 		btn.nodes = append(btn.nodes[:i], btn.nodes[i+1:]...)
 	}
+}
+
+func (btn *bTreeNode) RemoveFromListAt(index int) {
+	btn.length--
+	btn.nodes = append(btn.nodes[:index], btn.nodes[index+1:]...)
+}
+
+func (btn *bTreeNode) ReplaceFromListAt(new *keyValue, index int) {
+	btn.nodes[index] = new
 }
 
 // Search will complete a binary search for the given key and return the node and its index in the list. If it is not found, it will return (nil, index of where the node would be)
