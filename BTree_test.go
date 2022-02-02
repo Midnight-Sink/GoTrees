@@ -3,7 +3,6 @@ package GoTrees
 import (
 	"math/rand"
 	"sort"
-	"strconv"
 	sc "strconv"
 	"testing"
 )
@@ -183,7 +182,7 @@ func TestBTreeDelete(t *testing.T) {
 		}
 		for _, kInner := range keys[i+1:] {
 			if !BT.Contains(kInner) {
-				t.Fatal("Tree is missing key that wasn't deleted yet: " + strconv.Itoa(kInner))
+				t.Fatal("Tree is missing key that wasn't deleted yet: " + sc.Itoa(kInner))
 			}
 		}
 	}
