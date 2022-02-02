@@ -20,7 +20,7 @@ func TestBSTEmptyAllOps(t *testing.T) {
 	changed := BST.Delete(1)
 	actual := BST.String()
 
-	if len(nodes) != 0 || len(keys) != 0 || len(vals) != 0 || h != 0 || val != nil || changed != false || actual != "" {
+	if len(nodes) != 0 || len(keys) != 0 || len(vals) != 0 || h != 0 || val != nil || changed != false || actual != "X \n" {
 		t.Fatal("A BST operation failed when the tree was empty ")
 	}
 }

@@ -52,8 +52,13 @@ func (btn *bTreeNode) mergeRightSilbing(right *bTreeNode) {
 func (btn *bTreeNode) RemoveFromList(key int) {
 	_, i := btn.Search(key)
 	if i >= 0 {
-		btn.length--
-		btn.nodes = append(btn.nodes[:i], btn.nodes[i+1:]...)
+		if i >= btn.length {
+			btn.length--
+			btn.nodes = btn.nodes[:i]
+		} else {
+			btn.length--
+			btn.nodes = append(btn.nodes[:i], btn.nodes[i+1:]...)
+		}
 	}
 }
 
@@ -117,9 +122,16 @@ func max(a, b int) int {
 	}
 }
 
-// AddChild adds a child to the list
+// AddChild adds a child to the end list
 func (btn *bTreeNode) AddChild(other *bTreeNode) {
 	btn.children = append(btn.children, other)
+	btn.numChildren++
+}
+
+// PrependChild adds a child to the front list
+func (btn *bTreeNode) PrependChild(other *bTreeNode) {
+	btn.children = append(btn.children[1:], btn.children...)
+	btn.children[0] = other
 	btn.numChildren++
 }
 

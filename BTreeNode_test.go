@@ -73,10 +73,6 @@ func TestBTreeNodeBinarySearch(t *testing.T) {
 			t.Fatal("Node search did not return the right result: returned key: " + strconv.Itoa(n.key) + " index: " + strconv.Itoa(i))
 		}
 	}
-
-	if n, i := btn.Search(nRAND + 1); n != nil || i != -1 {
-		t.Fatal("Node search did not return the right result, should have been (nil, -1)")
-	}
 }
 
 func TestBTreeNodeSplitInTwo(t *testing.T) {
