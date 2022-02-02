@@ -330,6 +330,9 @@ func (bt *BTree) Delete(key int) bool {
 				} else {
 					// merge children and push this KV down 1 level since neither sibling can fill the gap
 					parentMerge(curr, curr.children[i], curr.children[i+1], i)
+					if curr == bt.root && bt.root.length <= 0 {
+						bt.root = curr.children[i]
+					}
 					curr = curr.children[i]
 					// must skip return since more merges may be required
 					continue
