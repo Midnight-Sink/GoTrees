@@ -41,7 +41,7 @@ func (btn *bTreeNode) AddToList(n *keyValue) {
 	btn.length++
 }
 
-func (btn *bTreeNode) mergeRightSilbing(right *bTreeNode) {
+func (btn *bTreeNode) MergeRightSilbing(right *bTreeNode) {
 	btn.nodes = append(btn.nodes, right.nodes...)
 	btn.length += right.length
 	btn.children = append(btn.children, right.children...)

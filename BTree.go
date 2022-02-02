@@ -448,7 +448,7 @@ func parentMerge(parent, left, curr *bTreeNode, index int) {
 	left.AddToList(parent.nodes[node_index])
 	parent.RemoveFromListAt(node_index)
 	// merge the silbing to the right (curr)
-	left.mergeRightSilbing(curr)
+	left.MergeRightSilbing(curr)
 	// right (curr) as it has been merged into left (+1 so the right child is deleted)
 	parent.DeleteChild(node_index + 1)
 }
